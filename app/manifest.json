@@ -1,0 +1,22 @@
+{
+    "name": "Just hide it!",
+    "manifest_version": 2,
+    "version": "0.1",
+    "description": "Hide troll in vk chat!",
+	"icons": {
+		"16":	"icon.png",
+		"128":	"icon.png"
+	},
+    "browser_action":	{
+        "default_icon": "icon.png"
+    },
+	"background": { "scripts": ["background.js"] },
+	"permissions": [ "storage", "https://vk.com/*", "http://api.vk.com/*"],
+	"options_page": "options.html",
+	"content_scripts": [
+	 {
+		"matches": ["https://vk.com/*"],
+		"js": ["content.js"]
+	}
+	]
+}
