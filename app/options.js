@@ -190,6 +190,19 @@
 			flash_red(dom.id_input);
 		}
 
+		self.generate_warn_msg = function() {
+			var msg = '';
+			if(self.model_ok()) {
+				msg = 'ok!';
+			}
+			else {
+				if(model.have_dublicate) {
+					msg+='Dublicate!';
+				}
+			}
+			return msg;
+		}
+
 		self.render_model = function() {
 			console.log('render_model');
 			if(self.model_ok()) {
@@ -197,13 +210,13 @@
 				dom.user_pic.src		= model.photo;
 				dom.user_fio.innerText	= model.first_name + ' ' + model.last_name;
 				self.flash_green();
-				warn.ok(self);
+				warn.ok_text(self.generate_warn_msg());
 			}
 			else {
 				dom.user_pic.src		= '';
 				dom.user_fio.innerText	= '';
 				self.flash_red();
-				warn.error(self);
+				warn.error_text(self.generate_warn_msg());
 			}
 			console.log(model,self,self.value);
 			if(self.value) {
@@ -342,6 +355,7 @@
 		}
 
 		self.show = function(item) {
+			console.log("show",self);
 			el.appendChild(item.get_el());
 			if(self.n) {
 				self.n--;
@@ -366,11 +380,17 @@
 		self.fetch_ready = function(opt) {
 			self.n = opt.length;;
 			console.log('fetch_ready', opt, self.n,self);
-			for(var i=0;i<self.n;i++) {
-				console.log("here");
-				self.add(opt[i].id);
+			if(!self.n) {
+				warn.ok_text("No data");
+				app.enable_btns();
 			}
-			display_none(el);
+			else {
+				for(var i=0;i<self.n;i++) {
+					console.log("here");
+					self.add(opt[i].id);
+				}
+				display_none(el);
+			}
 		}
 
 		self.save = function() {
