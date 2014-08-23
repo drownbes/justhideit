@@ -127,6 +127,7 @@
 		}
 
 		self.refresh_model = function() {
+			self.reset_model_errors();
 			if(owner.have_dublicate(self)) {
 				model.have_dublicate=true;
 				self.render_model();
@@ -164,7 +165,6 @@
 			model.uid = resp.uid;
 			model.screen_name = resp.screen_name;
 			model.photo = resp.photo;
-			self.reset_model_errors();
 			self.render_model();
 		}
 
@@ -197,7 +197,13 @@
 			}
 			else {
 				if(model.have_dublicate) {
-					msg+='Dublicate!';
+					msg+='Dublicate! ';
+				}
+				if(model.user_deactivated) {
+					msg+='User deleted! ';
+				}
+				if(model.ajax_error || model.api_error) {
+					msg+='Internal error! ';
 				}
 			}
 			return msg;
