@@ -2,15 +2,27 @@
 <html lang="en,ru">
 	<head><title>Just hide it</title></head>
 	<style>
-			.glowing-border {
+			.glow-red {
 				outline: none;
 				border-color: red;
 				box-shadow: 0 0 10px red;
 			}
-			.glowing-border-green {
+			.glow-green {
 				outline: none;
 				border-color: green;
 				box-shadow: 0 0 10px green;
+			}
+
+			.hard-red-glow {
+				outline: none;
+				border-color: red;
+				box-shadow: 0 0 20px red;
+			}
+
+			.hard-green-glow {
+				outline: none;
+				border-color: green;
+				box-shadow: 0 0 20px green;
 			}
 
 			.btn {
@@ -35,6 +47,7 @@
 				text-align:center;
 			}
 			.btn:hover {
+				cursor:pointer;
 				background-color:#378de5;
 			}
 			.btn:active {
@@ -65,6 +78,7 @@
 
 			.item_left_block {
 				float:left;
+				min-width:250px;
 				margin-top:10px;
 				margin-left:10px;
 			}
@@ -106,38 +120,39 @@
 				text-align:center;
 			}
 
-
+			#warning {
+				height:26px;
+				line-height:26px;
+				width:100%;
+				font-family:Arial;
+				 -webkit-font-smoothing: antialiased;
+				 -webkit-text-size-adjust: 100%;
+				font-size:16px;
+				font-weight:bold;
+				text-align:center;
+				margin-top:20px;
+				background-color:#79bcff;
+				border-top-left-radius:42px;
+				border-top-right-radius:42px;
+				border-bottom-right-radius:42px;
+				border-bottom-left-radius:42px;
+				border-color:#79bcff;
+			}
 
 	</style>
 	<body>
 	<div id="btns">
+		<div>
 		<a class="btn" id="savebtn" href="#">Save</a>
 		<a class="btn" id="addbtn"	href="#">Add</a>
+		</div>
+		<div id="warning"></div>
 	</div>
 
-	<img id="progress" src="progress.gif"></img>
+	<!--<img id="progress" src="progress.gif"></img>-->
 	<div id="items">
-		<!--<div class="item">-->
-			<!--<div class="item_left_block">-->
-				<!--<input class="item_id_input" placeholder="User id">-->
-				<!--<div class="item_user_fio">User safasfa s Name</div>-->
-			<!--</div>-->
-			<!--<div class="item_right_block">-->
-				<!--<div class="item_user_remove">-->
-					<!--<a class="btn" href="#">remove</a>-->
-				<!--</div>-->
-				<!--<img src="icon.png" class="item_user_pic"></img>-->
-			<!--</div>-->
-		<!--</div>-->
 	</div>
 
-
-		<!--<div id="container">-->
-			<!--<ul id="items"></ul>-->
-			<!--<div id="btns">-->
-
-			<!--</div>-->
-		<!--</div>-->
-		<script src="options.js"></script>
+	<script src="options.js"></script>
 	</body>
 </html>

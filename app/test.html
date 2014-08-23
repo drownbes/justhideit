@@ -5,57 +5,42 @@
 		<meta name="viewport" content="width=device-width">
 		<title></title>
 		<style>
-			li {
-				margin: 0 0 3px 0;
-			}
-			.remove_btn {
-				background-color:#79bcff;
-				border-top-left-radius:42px;
-				border-top-right-radius:42px;
-				border-bottom-right-radius:42px;
-				border-bottom-left-radius:42px;
-				text-indent:0px;
-				display:inline-block;
-				color:#050505;
-				font-family:Arial;
-				font-size:16px;
-				font-weight:bold;
-				font-style:normal;
-				height:26px;
-				line-height:26px;
-				width:86px;
-				text-decoration:none;
-				text-align:center;
-			}
-			.remove_btn:hover {
-				background-color:#378de5;
-			}
-			.remove_btn:active {
-				position:relative;
-				top:1px;
-			}
-			input {
-				margin-right:40px;
-			}
-			a {
-			}
-
-
 		</style>
 	</head>
 	<body>
-		<div id="container">
-			<ul id="items">
-				<li>
-					<input type="text"/>
-					<a href="#" class="remove_btn"></a>
-				</li>
-				<li>
-					<input type="text">
-					<a href="#" class="remove_btn"></a>
-				</li>
-			</ul>
+		<button id="ff">Press</button>
 
-		</div>
+
+		<script>
+			function Test(value) {
+				var self = {}
+
+				self.data = {
+					a:4,
+					b:3
+				}
+
+				self.m = function() {
+					console.log(self.data);
+				}
+				self.t = function() {
+					self.m();
+				}
+
+				self.on = function() {
+					console.log(this,self);
+				}
+
+
+				var h = document.getElementById('ff');
+				h.onclick = self.on;
+
+				return self;
+			}
+			var t = Test(4);
+			t.t();
+			t.m();
+
+		</script>
 	</body>
 </html>
