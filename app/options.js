@@ -308,43 +308,10 @@
 		return self;
 	}
 
-	function StorageManager(warn) {
-		var self = {};
-
-		self.get = function(key, onready) {
-			chrome.storage.sync.get(key, function(o) {
-				var opt = JSON.parse(o[key]);
-				if(!opt) {
-					warn.error(self);
-				}
-				else {
-					warn.ok(self);
-				}
-				onready(opt);
-			});
-		}
-
-		self.set = function(key, value, onready) {
-			var opt = JSON.stringify(value);
-			if(!opt) {
-				warn.error(self);
-			}
-			var d = {};
-			d[key] = opt;
-			chrome.storage.sync.set(d, function() {
-				warn.ok(self);
-				onready();
-			});
-		}
-
-		return self;
-	}
-
 	function ItemCollection(app, storage, warn) {
 		var self = {};
 		var items = [],
-			el = ById('items')
-			persist_hash = 'options';
+			el = ById('items');
 
 		self.onremove = function(item) {
 			var r = items.indexOf(item);
@@ -380,7 +347,7 @@
 
 		self.fetch = function() {
 			warn.text('Loading...');
-			storage.get(persist_hash,self.fetch_ready);
+			storage.get(lib.common.persist_hash,self.fetch_ready);
 		}
 
 		self.fetch_ready = function(opt) {
@@ -415,7 +382,11 @@
 			}
 			if(no_err) {
 				app.disable_btns();
-				storage.set(persist_hash,forsave,self.save_ready);
+				chrome.runtime.sendMessage({
+					cmd:'update_options',
+					data: forsave
+				});
+				storage.set(lib.common.persist_hash,forsave,self.save_ready);
 			}
 			else {
 				warn.error_text('Save failed');
@@ -457,7 +428,7 @@
 
 		self.run = function() {
 			self.warn = Warn();
-			self.storage = StorageManager(self.warn);
+			self.storage = lib.StorageManager(self.warn);
 			self.ic = ItemCollection(self,self.storage,self.warn);
 			self.ic.fetch();
 		}

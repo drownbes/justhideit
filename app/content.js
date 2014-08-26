@@ -1,62 +1,70 @@
-(function(){
+(function() {
+function ContentScript() {
+	var self = {};
+	var old_href='';
+	self.options=[];
 
-var detect_href_change = function(callback,timeout) {
-	if(!callback) {
-		return null;
+	self.parse_vk_tab = function(href) {
+		if( /^https:\/\/vk.com\/im\?(.*)sel\=(.*)/.test(href) ) {
+			self.msg({cmd:'on_im'});
+		}
 	}
-	var callback= callback,
-		timeout = timeout || 1000,
-		old_href= location.href,
-		handle	= function() {
-			if( location.href != old_href ) {
-				old_href = location.href;
-				callback();
+
+	self.ontimeout = function() {
+		var new_href = location.href;
+		if(new_href != old_href) {
+			self.parse_vk_tab(new_href);
+		}
+		setTimeout(self.ontimeout,1000);
+		old_href = new_href;
+	}
+
+	self.msg = function(req) {
+		console.log('send:',req);
+		chrome.runtime.sendMessage(req);
+	}
+
+	self.onmsg = function(request, sender, sendResponse) {
+		console.log(request);
+		if(request.cmd == 'toggle') {
+			var bls = [];
+			var blk = [];
+			for(var i=0;i<self.options.length;i++) {
+				bls.push(self.options[i].id);
+				blk.push('/'+self.options[i].screen_name);
 			}
-			setTimeout(handle,timeout);
-		},
-		start	= function() {
-			setTimeout(handle,timeout);
-		};
-	return {
-		start: start
-	};
-};
-
-function parse_href() {
-	var is_vk_im = /^https:\/\/vk.com\/im\?sel\=/.test(location.href);
-	if(!is_vk_im) return;
-	console.log("in vk im");
-	chrome.runtime.sendMessage({cmd: "on_im"}, function(response) {
-	});
-}
-
-function activate() {
-	chrome.runtime.sendMessage({cmd: "add_tab"}, function(response) {
-	});
-}
-
-window.onbeforeunload = function cleanup() {
-	chrome.runtime.onMessage.removeListener(msg_listen);
-	chrome.runtime.sendMessage({cmd: "remove_tab"}, function(response) {
-	});
-
-};
-
-
-function msg_listen(request, sender, sendResponse) {
-	if(request.cmd == "refresh_options") {
-		console.log(request);
+			window.postMessage({cmd:"enable", blacklist:bls,blacklinks:blk}, location.href);
+		}
+		else if(request == 'update_options') {
+			self.options = request.data;
+		}
+		self.options = ['666'];
+		console.log(self);
 	}
-	else if(request.cmd == "toggle") {
-		console.log(request);
+
+	self.cleanup = function() {
+		chrome.runtime.onMessage.removeListener(self.onmsg);
+		var req = {cmd:'remove_tab'};
+		self.msg(req);
 	}
+
+	self.run = function() {
+		window.onbeforeunload = self.cleanup;
+		chrome.runtime.onMessage.addListener(self.onmsg);
+		self.msg({cmd:'add_tab'});
+		self.ontimeout();
+	}
+
+	return self;
 }
 
-chrome.runtime.onMessage.addListener(msg_listen);
 
-activate();
-parse_href();
-var activator = detect_href_change(parse_href,500);
-activator.start();
+var s = chrome.extension.getURL('payload.js'),
+	sc = document.createElement('script');
+sc.src = s;
+document.head.appendChild(sc);
+document.body.setAttribute("onLoad",'');
+var cs = ContentScript();
+cs.run();
 
 })();
