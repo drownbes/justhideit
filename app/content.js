@@ -5,17 +5,24 @@ function ContentScript() {
 	self.black_ids=[];
 	self.black_sn=[];
 	self.hidden_list=[];
+	self.state=true;
 
 	self.push_hidden = function(el) {
-		console.log('[Content script]','push hidden', el);
+		//console.log('[Content script]','push hidden', el);
 		self.hidden_list.push(el);
+	}
+
+	self.hide_el = function(el) {
+		if(self.state) {
+			el.style.display = 'none';
+		}
 	}
 
 	self.process_msg_el = function(msg_el) {
 		var from = msg_el.getAttribute('data-from');
 		if(self.black_ids.indexOf(from) != -1) {
 			self.push_hidden(msg_el);
-			msg_el.style.display = 'none';
+			self.hide_el(msg_el);
 		}
 		else {
 			var qs = msg_el.querySelectorAll('.im_fwd_log_row');
@@ -24,7 +31,7 @@ function ContentScript() {
 				if(a) {
 					if( self.black_sn.indexOf(a.getAttribute('href')) != -1) {
 						self.push_hidden(qs[k]);
-						qs[k].style.display = 'none';
+						self.hide_el(qs[k]);
 					}
 				}
 			}
@@ -37,6 +44,12 @@ function ContentScript() {
 		}
 	}
 
+	self.hide = function() {
+		for(var i=0;i< self.hidden_list.length;i++) {
+			self.hidden_list[i].style.display = 'none';
+		}
+	}
+
 	self.init_hide = function() {
 		var trs = document.querySelectorAll('tr.im_in'),
 			from, el;
@@ -46,7 +59,6 @@ function ContentScript() {
 			self.process_msg_el(el);
 		}
 	}
-
 
 	self.inject_payload = function() {
 		var injected = document.getElementById('payloadjs');
@@ -76,6 +88,9 @@ function ContentScript() {
 			self.send2bg({cmd:'on_im'});
 			self.inject_payload();
 		}
+		else {
+			self.hidded_list=[];
+		}
 	}
 
 	self.ontimeout = function() {
@@ -93,6 +108,10 @@ function ContentScript() {
 			if(!request.data) {
 				self.unhide();
 			}
+			else {
+				self.hide();
+			}
+			self.state = request.data;
 		}
 		else if(request.cmd == 'update_options') {
 			self.black_ids = [];
@@ -104,6 +123,8 @@ function ContentScript() {
 				self.black_sn.push('/' + k.screen_name);
 			}
 			console.log('[Content script]','recv_from_bg', self.black_ids, self.black_sn);
+			self.unhide();
+			self.hidden_list=[];
 			self.init_hide();
 		}
 	}
@@ -137,15 +158,6 @@ function ContentScript() {
 
 	return self;
 }
-
-/*
-var s = chrome.extension.getURL('payload.js'),
-	sc = document.createElement('script');
-sc.id = 'payloadjs';
-sc.src = s;
-document.head.appendChild(sc);
-document.body.setAttribute("onLoad",'');
-*/
 var cs = ContentScript();
 cs.run();
 })();
