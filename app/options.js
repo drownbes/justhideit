@@ -247,7 +247,7 @@
 
 		self.get_persist = function() {
 			var d = {}
-			d['id'] = model.id;
+			d['id'] = model.uid;
 			d['screen_name'] = model.screen_name;
 			return d;
 		}

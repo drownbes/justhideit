@@ -24,6 +24,7 @@ function Main() {
 			self.msgtab(sender.tab.id,self.toggle_req());
 		}
 		else if(request.cmd == "update_options") {//from options.js
+			options = request.data;
 			self.msgtabs(self.update_options_req());
 		}
 	}
