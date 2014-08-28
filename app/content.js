@@ -25,14 +25,23 @@ function ContentScript() {
 			self.hide_el(msg_el);
 		}
 		else {
-			var qs = msg_el.querySelectorAll('.im_fwd_log_row');
+			var qs = msg_el.querySelectorAll('.im_fwd_log_row'),
+				a, maybe_add_row=false;
 			for(var k=0;k<qs.length;k++) {
-				var a = qs[k].querySelector('.im_log_author_chat_name > a');
+				a = qs[k].querySelector('.im_log_author_chat_name > a');
 				if(a) {
-					if( self.black_sn.indexOf(a.getAttribute('href')) != -1) {
+					if( self.black_sn.indexOf(a.getAttribute('href')) > -1) {
 						self.push_hidden(qs[k]);
 						self.hide_el(qs[k]);
+						maybe_add_row = true;
 					}
+					else {
+						maybe_add_row = false;
+					}
+				}
+				else if( qs[k].className.indexOf('im_fwd_log_add_row') > -1 && maybe_add_row) {
+					self.push_hidden(qs[k]);
+					self.hide_el(qs[k]);
 				}
 			}
 		}
